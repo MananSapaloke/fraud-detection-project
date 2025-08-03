@@ -112,3 +112,57 @@ if 'df' in locals():
 
     print("\nFinal DataFrame Info:")
     cleaned_df.info()
+
+    # =============================================================================
+# Step 4: Model Building & Training
+# =============================================================================
+# This section will only run if the 'cleaned_df' DataFrame was successfully created
+if 'cleaned_df' in locals():
+    print("\n--- Starting Model Building & Training ---")
+
+    # Import necessary libraries from scikit-learn
+    from sklearn.model_selection import train_test_split
+    from sklearn.ensemble import RandomForestClassifier
+    from sklearn.metrics import classification_report, confusion_matrix
+
+    # --- Task 1: Separate features (X) and target (y) ---
+    X = cleaned_df.drop('isFraud', axis=1)
+    y = cleaned_df['isFraud']
+
+    print("\nFeatures (X) for the model:")
+    print(X.head())
+    print("\nTarget (y) for the model:")
+    print(y.head())
+
+    # --- Task 2: Split data into training and testing sets ---
+    # We use stratify=y to ensure the proportion of fraud cases is the same in both train and test sets.
+    # This is crucial for imbalanced datasets.
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42, stratify=y
+    )
+
+    print(f"\nTraining set size: {len(X_train)}")
+    print(f"Testing set size: {len(X_test)}")
+
+    # --- Task 3: Train a RandomForestClassifier model ---
+    print("\nTraining the RandomForestClassifier...")
+    model = RandomForestClassifier(n_estimators=100, random_state=42, n_jobs=-1)
+    model.fit(X_train, y_train)
+    print("Model training complete.")
+
+    # --- Task 4: Evaluate the model ---
+    print("\nEvaluating the model on the test set...")
+    y_pred = model.predict(X_test)
+
+    print("\n--- Model Performance ---")
+
+    # Confusion Matrix: Shows correct vs. incorrect predictions
+    # TN | FP
+    # FN | TP
+    print("\nConfusion Matrix:")
+    cm = confusion_matrix(y_test, y_pred)
+    print(cm)
+
+    # Classification Report: Shows precision, recall, f1-score
+    print("\nClassification Report:")
+    print(classification_report(y_test, y_pred, target_names=['Non-Fraud', 'Fraud']))
