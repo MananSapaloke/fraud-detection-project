@@ -75,3 +75,40 @@ if 'df' in locals():
     
 else:
     print("\nDataframe 'df' not found. Please ensure the data loading section ran correctly.")
+
+
+# =============================================================================
+# Step 3: Data Cleaning and Feature Engineering
+# =============================================================================
+# This section will only run if the DataFrame 'df' was successfully loaded
+if 'df' in locals():
+    print("\n--- Starting Data Cleaning & Feature Engineering ---")
+
+    # --- Task 1: Filter for relevant transaction types ---
+    # Based on our EDA, we create a new DataFrame with only the types where fraud occurs.
+    # We use .copy() to avoid a SettingWithCopyWarning.
+    relevant_df = df[df['type'].isin(['TRANSFER', 'CASH_OUT'])].copy()
+
+    print(f"\nOriginal dataset rows: {len(df)}")
+    print(f"Rows after filtering for 'TRANSFER' & 'CASH_OUT': {len(relevant_df)}")
+
+    # --- Task 2: Create numerical features from 'type' column ---
+    # We use one-hot encoding to convert the 'type' column into a numerical format.
+    # 'type_TRANSFER' will be 1 if the type was TRANSFER, and 0 otherwise.
+    relevant_df = pd.get_dummies(relevant_df, columns=['type'], prefix='type', drop_first=True)
+    # drop_first=True is used to avoid multicollinearity, which is good practice.
+
+    # --- Task 3: Drop columns that are not useful for modeling ---
+    # 'nameOrig', 'nameDest' are unique identifiers. 'step' is a time-step we won't use here.
+    # 'isFlaggedFraud' is a rule-based flag that we want our model to outperform.
+    cleaned_df = relevant_df.drop(['step', 'nameOrig', 'nameDest', 'isFlaggedFraud'], axis=1)
+
+    print("\nData cleaning and feature engineering complete.")
+    print("Dropped irrelevant columns and converted 'type' to numerical.")
+
+    # --- Display the final, cleaned DataFrame ---
+    print("\nHead of the final, cleaned DataFrame ready for modeling:")
+    print(cleaned_df.head())
+
+    print("\nFinal DataFrame Info:")
+    cleaned_df.info()
