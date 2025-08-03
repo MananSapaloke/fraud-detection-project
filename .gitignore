@@ -1,0 +1,7 @@
+# Ignore the large dataset file
+payment_fraud.csv
+
+# Ignore Python's cache and virtual environment files
+__pycache__/
+*.pyc
+venv/
